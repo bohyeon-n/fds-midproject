@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const postAPI = axios.create({});
+const postAPI = axios.create({
+  baseURL: process.env.API_URL
+});
 const rootEl = document.querySelector(".root");
 function login(token) {
   localStorage.setItem("token", token);
@@ -24,7 +26,7 @@ function render(fragment) {
   rootEl.appendChild(fragment);
 }
 async function indexPage() {
-  const res = await postAPI.get("http://localhost:3000/posts");
+  const res = await postAPI.get("/posts");
   const listFragment = document.importNode(templates.postList, true);
   listFragment
     .querySelector(".post-list__login-btn")
@@ -55,7 +57,7 @@ async function indexPage() {
 }
 
 async function postContentPage(postId) {
-  const res = await postAPI.get(`http://localhost:3000/posts/${postId}`);
+  const res = await postAPI.get(`/posts/${postId}`);
   const fragment = document.importNode(templates.postContent, true);
   fragment.querySelector(".post-content__title").textContent = res.data.title;
   fragment.querySelector(".post-content__body").textContent = res.data.body;
@@ -76,7 +78,7 @@ async function loginPage() {
     };
     e.preventDefault();
     const res = await postAPI.post(
-      "http://localhost:3000/users/login",
+      "/users/login",
       payload
     );
     login(res.data.token);
@@ -98,7 +100,7 @@ async function postFormPage() {
       title: e.target.elements.title.value,
       body: e.target.elements.body.value
     };
-    const res = await postAPI.post("http://localhost:3000/posts", payload);
+    const res = await postAPI.post("/posts", payload);
     console.log(res);
     postContentPage(res.data.id);
   });
