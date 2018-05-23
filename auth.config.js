@@ -1,8 +1,8 @@
 module.exports = {
   posts: {
     write: 'ownerOnly'
-  },
-  comments: {
+  } 
+  , comments: {
     read: 'ifAuthed',
     write: 'ownerOnly'
   }

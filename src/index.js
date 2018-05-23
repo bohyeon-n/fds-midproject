@@ -19,7 +19,9 @@ const templates = {
   postItem: document.querySelector("#post-item").content,
   postContent: document.querySelector("#post-content").content,
   login: document.querySelector("#login").content,
-  postForm: document.querySelector("#post-form").content
+  postForm: document.querySelector("#post-form").content,
+  commentEl: document.querySelector('#post-comment').content,
+  commentList: document.querySelector("#post-comment__body").content
 };
 function render(fragment) {
   rootEl.textContent = "";
@@ -61,22 +63,44 @@ async function postContentPage(postId) {
   const fragment = document.importNode(templates.postContent, true);
   fragment.querySelector(".post-content__title").textContent = res.data.title;
   fragment.querySelector(".post-content__body").textContent = res.data.body;
-  fragment
-    .querySelector(".post-content__back-btn")
-    .addEventListener("click", e => {
+  fragment.querySelector(".post-content__back-btn").addEventListener("click", e => {
       indexPage();
     });
+  postcomment(postId)
   render(fragment);
 }
+async function postcomment(postId) {
+  const res = await postAPI.get(`/posts/${postId}/comments`)
+  const fragmentList = document.importNode(templates.commentEl, true)
+  res.data.forEach(comment => {
+    const fragment = document.importNode(templates.commentList, true)
+    const pEl = fragment.querySelector('.post-comment__body')
+    console.log(comment.body)
+    pEl.textContent = comment.body;
+    fragmentList.querySelector(".comment-list").appendChild(fragment);
+    })
+    fragmentList.querySelector('.comment-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const body = e.target.body.value
+      console.log(body)
+      const res = await postAPI.post(`/comments`, {
+        body,
+        postId: postId
+      })
+      postContentPage(postId)
+    })
+  rootEl.appendChild(fragmentList)
+}
+
 async function loginPage() {
   const fragment = document.importNode(templates.login, true);
   const formEl = fragment.querySelector(".login__form");
   formEl.addEventListener("submit", async e => {
+    e.preventDefault();
     const payload = {
       username: e.target.elements.username.value,
       password: e.target.elements.password.value
     };
-    e.preventDefault();
     const res = await postAPI.post(
       "/users/login",
       payload
