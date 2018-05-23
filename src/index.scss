@@ -10,7 +10,7 @@ body {
       display: none;
     }
   }
-  &__logout-btn {
+  &__new-post-btn, &__logout-btn {
     display: none;
     .root--authed & {
       display: inline-block;
