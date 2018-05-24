@@ -87,8 +87,18 @@ async function postContentPage(postId) {
       commentsRes.data.forEach(comment => {
         const itemFragment = document.importNode(templates.commentItem, true)
         // itemFragment.querySelector('.comment-item__author').textContent = comment.user.username
-        itemFragment.querySelector('.comments-item__body').textContent = comment.body;
-        commentsFragment.querySelector('.comments__list').appendChild(itemFragment)
+       const bodyEl =  itemFragment.querySelector('.comments-item__body')
+       const removeBtnEl = itemFragment.querySelector('comments-item__remove-btn')
+        bodyEl.textContent = comment.body;
+       commentsFragment.querySelector('.comments__list').appendChild(itemFragment)
+        removeBtnEl.addEventListener('click', async e => {
+          //p 태그와  버튼 태그 삭제 
+          bodyEl.remove();
+          removeBtnEl.remove();
+          // 요청 
+         const res =  await postAPI.delete(`/comments/${comment.id}`)
+          // 요청이 실패했을 경우 원상복구(복잡하니까 생략함)
+        })
       })
       const formEl = commentsFragment.querySelector('.comments__form')
       formEl.addEventListener('submit', async e => {
@@ -102,6 +112,7 @@ async function postContentPage(postId) {
         postContentPage(postId); 
       })
       fragment.appendChild(commentsFragment)
+
     }
 
   render(fragment);
