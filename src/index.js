@@ -19,14 +19,20 @@ const templates = {
   postItem: document.querySelector("#post-item").content,
   postContent: document.querySelector("#post-content").content,
   login: document.querySelector("#login").content,
-  postForm: document.querySelector("#post-form").content
+  postForm: document.querySelector("#post-form").content,
+  comments: document.querySelector('#comments').content,
+  commentItem: document.querySelector('#comments-item').content
 };
 function render(fragment) {
   rootEl.textContent = "";
   rootEl.appendChild(fragment);
 }
 async function indexPage() {
-  const res = await postAPI.get("/posts");
+  const res = await postAPI.get("/posts?_expand=user");
+  // for(let post of res.data) {
+  //   const res = await postAPI.get(`users/${post.userId}`)
+  //   post.user = res.data
+  // }
   const listFragment = document.importNode(templates.postList, true);
   listFragment
     .querySelector(".post-list__login-btn")
@@ -41,6 +47,7 @@ async function indexPage() {
     });
   res.data.forEach(post => {
     const fragment = document.importNode(templates.postItem, true);
+    fragment.querySelector('.post-item__author').textContent = post.user.username
     const pEl = fragment.querySelector(".post-item__title");
     pEl.textContent = post.title;
     pEl.addEventListener("click", e => {
@@ -57,15 +64,29 @@ async function indexPage() {
 }
 
 async function postContentPage(postId) {
-  const res = await postAPI.get(`/posts/${postId}`);
+  const res = await postAPI.get(`/posts/${postId}?_expand=user`);
   const fragment = document.importNode(templates.postContent, true);
   fragment.querySelector(".post-content__title").textContent = res.data.title;
+  fragment.querySelector(".post-content__author").textContent = res.data.user.username
   fragment.querySelector(".post-content__body").textContent = res.data.body;
   fragment
     .querySelector(".post-content__back-btn")
     .addEventListener("click", e => {
       indexPage();
     });
+    if(localStorage.getItem('token')) {
+
+      const commentsFragment = document.importNode(templates.comments, true)
+      const commentsRes = await postAPI.get(`/posts/${postId}/comments`)
+      commentsRes.data.forEach(comment => {
+        const itemFragment = document.importNode(templates.commentItem, true)
+        // itemFragment.querySelector('.comment-item__author').textContent = comment.user.username
+        itemFragment.querySelector('.comments-item__body').textContent = comment.body;
+        commentsFragment.querySelector('.comments__list').appendChild(itemFragment)
+      })
+      fragment.appendChild(commentsFragment)
+    }
+
   render(fragment);
 }
 async function loginPage() {
