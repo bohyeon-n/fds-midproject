@@ -18,6 +18,21 @@ body {
   }
 }
 
+.root {
+  &--loading {
+    &::after {
+      display: block;
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom:0;
+      content: 'Loading';
+      background-color: rgba(0,0,0,0.5);
+      color: white;
+    }
+  }
+}
 
 
 // .root--authed .post-list__login-btn {

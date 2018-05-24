@@ -28,7 +28,9 @@ function render(fragment) {
   rootEl.appendChild(fragment);
 }
 async function indexPage() {
+  rootEl.classList.add('root--loading')
   const res = await postAPI.get("/posts?_expand=user");
+  rootEl.classList.remove('root--loading')
   // for(let post of res.data) {
   //   const res = await postAPI.get(`users/${post.userId}`)
   //   post.user = res.data
