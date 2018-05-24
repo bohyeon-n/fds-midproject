@@ -66,7 +66,9 @@ async function indexPage() {
 }
 
 async function postContentPage(postId) {
+  rootEl.classList.add('root--loading')
   const res = await postAPI.get(`/posts/${postId}?_expand=user`);
+  rootEl.classList.remove('root--loading')
   const fragment = document.importNode(templates.postContent, true);
   fragment.querySelector(".post-content__title").textContent = res.data.title;
   fragment.querySelector(".post-content__author").textContent = res.data.user.username
@@ -79,7 +81,9 @@ async function postContentPage(postId) {
     if(localStorage.getItem('token')) {
 
       const commentsFragment = document.importNode(templates.comments, true)
+      rootEl.classList.add('root--loading')
       const commentsRes = await postAPI.get(`/posts/${postId}/comments`)
+      rootEl.classList.remove('root--loading')
       commentsRes.data.forEach(comment => {
         const itemFragment = document.importNode(templates.commentItem, true)
         // itemFragment.querySelector('.comment-item__author').textContent = comment.user.username
@@ -92,7 +96,9 @@ async function postContentPage(postId) {
         const payload = {
           body: e.target.elements.body.value
         }
+        rootEl.classList.add('root--loading')
         const res = await postAPI.post(`posts/${postId}/comments`, payload)
+        rootEl.classList.remove('root--loading')
         postContentPage(postId); 
       })
       fragment.appendChild(commentsFragment)
