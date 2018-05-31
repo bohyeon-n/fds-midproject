@@ -88,7 +88,7 @@ async function postContentPage(postId) {
         const itemFragment = document.importNode(templates.commentItem, true)
         // itemFragment.querySelector('.comment-item__author').textContent = comment.user.username
        const bodyEl =  itemFragment.querySelector('.comments-item__body')
-       const removeBtnEl = itemFragment.querySelector('comments-item__remove-btn')
+       const removeBtnEl = itemFragment.querySelector('.comments-item__remove-btn')
         bodyEl.textContent = comment.body;
        commentsFragment.querySelector('.comments__list').appendChild(itemFragment)
         removeBtnEl.addEventListener('click', async e => {
